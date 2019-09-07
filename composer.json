@@ -1,0 +1,15 @@
+{
+    "autoload": {
+        "psr-4": {
+            "FIADocumentAPI\\": "src"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "paquettg/php-html-parser": "^2.1",
+        "league/container": "^3.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.3"
+    }
+}
