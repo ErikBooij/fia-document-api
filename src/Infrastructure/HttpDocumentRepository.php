@@ -10,6 +10,9 @@ use GuzzleHttp\Exception\GuzzleException;
 
 final class HttpDocumentRepository implements DocumentRepositoryInterface
 {
+    /** @var FileSystemCache */
+    private $fileSystemCache;
+
     /** @var ClientInterface */
     private $httpClient;
 
@@ -17,15 +20,18 @@ final class HttpDocumentRepository implements DocumentRepositoryInterface
     private $responseParser;
 
     /**
-     * @param ClientInterface   $httpClient
+     * @param ClientInterface             $httpClient
      * @param HTMLResponseParserInterface $responseParser
+     * @param FileSystemCache             $fileSystemCache
      */
     public function __construct(
         ClientInterface $httpClient,
-        HTMLResponseParserInterface $responseParser
+        HTMLResponseParserInterface $responseParser,
+        FileSystemCache $fileSystemCache
     ) {
         $this->httpClient = $httpClient;
         $this->responseParser = $responseParser;
+        $this->fileSystemCache = $fileSystemCache;
     }
 
     /**
@@ -33,6 +39,12 @@ final class HttpDocumentRepository implements DocumentRepositoryInterface
      */
     public function getAll(): array
     {
+        $cacheData = $this->fileSystemCache->get('parsed-data');
+
+        if (is_array($cacheData)) {
+            return $cacheData;
+        }
+
         try {
             $response = $this->httpClient->request('GET', 'https://www.fia.com/documents', [
                 'max' => 0,
@@ -44,7 +56,9 @@ final class HttpDocumentRepository implements DocumentRepositoryInterface
                 throw UnableToFetchDocumentsException::because("the request returned a {$statusCode} response");
             }
 
-            return $this->responseParser->parse((string)$response->getBody());
+            $parsed = $this->responseParser->parse((string)$response->getBody());
+
+            return $this->fileSystemCache->set('parsed-data', $parsed, 60);
         } catch (GuzzleException $exception) {
             throw UnableToFetchDocumentsException::because("failed to fulfill the request to FIA's upstream", $exception);
         } catch (UnableToParseHTMLResponseException $exception) {

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use FIADocumentAPI\Application\DocumentRepositoryInterface;
 use FIADocumentAPI\Application\UnableToFetchDocumentsException;
+use FIADocumentAPI\Infrastructure\FileSystemCache;
 use FIADocumentAPI\Infrastructure\HTMLResponseParserInterface;
 use FIADocumentAPI\Infrastructure\HttpDocumentRepository;
 use FIADocumentAPI\Infrastructure\ResponseParserXML;
@@ -17,9 +18,12 @@ $container->add(DocumentRepositoryInterface::class, HttpDocumentRepository::clas
     ->addArguments([
         ClientInterface::class,
         HTMLResponseParserInterface::class,
+        FileSystemCache::class,
     ]);
-$container->add(HTMLResponseParserInterface::class, ResponseParserXML::class);
 $container->add(ClientInterface::class, Client::class);
+$container->add(FileSystemCache::class, FileSystemCache::class)
+    ->addArgument(__DIR__ . '/../cache');
+$container->add(HTMLResponseParserInterface::class, ResponseParserXML::class);
 
 /** @var DocumentRepositoryInterface $repository */
 $repository = $container->get(DocumentRepositoryInterface::class);
