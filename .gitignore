@@ -3,3 +3,5 @@
 /.idea
 /coverage
 /vendor
+/Authkey_*
+/config.json
