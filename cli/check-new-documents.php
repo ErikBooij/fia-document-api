@@ -16,7 +16,7 @@ if (file_exists($previouslySentFile) && is_readable($previouslySentFile)) {
     $parsed = json_decode($previouslySentFileContents, true);
 
     if (json_last_error() === JSON_ERROR_NONE && is_array($parsed)) {
-        $previouslySent = $parsed;
+        $previouslySent = $parsed['data'];
     }
 }
 
@@ -37,4 +37,10 @@ foreach ($documents as $documentGroup) {
     }
 }
 
-file_put_contents($previouslySentFile, json_encode($previouslySent, JSON_PRETTY_PRINT));
+file_put_contents(
+    $previouslySentFile,
+    json_encode([
+        'data' => $previouslySent,
+        'saved' => (new DateTimeImmutable)->format(DateTime::ATOM)
+    ], JSON_PRETTY_PRINT)
+);
