@@ -13,17 +13,7 @@ use League\Container\Container;
 
 include __DIR__ . '/../vendor/autoload.php';
 
-$container = new Container;
-$container->add(DocumentRepositoryInterface::class, HttpDocumentRepository::class)
-    ->addArguments([
-        ClientInterface::class,
-        HTMLResponseParserInterface::class,
-        FileSystemCache::class,
-    ]);
-$container->add(ClientInterface::class, Client::class);
-$container->add(FileSystemCache::class, FileSystemCache::class)
-    ->addArgument(__DIR__ . '/../cache');
-$container->add(HTMLResponseParserInterface::class, ResponseParserXML::class);
+$container = include __DIR__ . '/../container.php';
 
 /** @var DocumentRepositoryInterface $repository */
 $repository = $container->get(DocumentRepositoryInterface::class);

@@ -6,7 +6,7 @@ namespace FIADocumentAPI\Application;
 interface DocumentRepositoryInterface
 {
     /**
-     * @return array
+     * @return DocumentCollection[]
      * @throws UnableToFetchDocumentsException
      */
     public function getAll(): array;
