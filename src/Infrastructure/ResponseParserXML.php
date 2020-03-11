@@ -26,7 +26,8 @@ final class ResponseParserXML implements HTMLResponseParserInterface
             $dom = new Dom;
             $dom->load($html);
 
-            $wrappers = $dom->find('.regulations-content .category-wrapper');
+            $wrappers = $dom->find('.event-wrapper');
+
             $documentCollections = [];
 
             foreach ($wrappers as $wrapper) {
@@ -34,7 +35,8 @@ final class ResponseParserXML implements HTMLResponseParserInterface
                     continue;
                 }
 
-                $titleElement = $wrapper->find('p')[0] ?? null;
+
+                $titleElement = $wrapper->find('.event-title')[0] ?? null;
 
                 if (!$titleElement instanceof HtmlNode) {
                     continue;
@@ -42,27 +44,23 @@ final class ResponseParserXML implements HTMLResponseParserInterface
 
                 $event = trim($titleElement->text());
 
-                $documentNodes = $wrapper->find('.list-item');
+                $documentNodes = $wrapper->find('.document-row');
                 $documents = [];
 
                 foreach ($documentNodes as $documentNode) {
                     if (!$documentNode instanceof HtmlNode) {
-                        var_dump('SKIPPING 1');
                         continue;
                     }
 
                     if (!$url = $this->extractUrl($documentNode)) {
-                        var_dump('SKIPPING 2');
                         continue;
                     }
 
                     if (!$title = $this->extractTitle($documentNode)) {
-                        var_dump('SKIPPING 3');
                         continue;
                     }
 
                     if (!$published = $this->extractPublicationDate($documentNode)) {
-                        var_dump('SKIPPING 4');
                         continue;
                     }
 
